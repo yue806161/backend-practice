@@ -6,10 +6,15 @@
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "build": "tsc",
+    "release": "standard-version",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "standard-version": {
+    "infile": "docs/CHANGELOG.md",
+    "releaseCommitMessageFormat": "[{{currentTag}}][{{date}}]\n\n{{changelog}}"
+  },
   "keywords": [],
-  "author": "fu",
+  "author": "alex",
   "license": "MIT",
   "dependencies": {
     "@types/axios": "^0.9.36",
@@ -20,9 +25,10 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
-    "joi": "^17.13.3",
     "mongodb": "^6.8.0",
-    "ws": "^8.18.0"
+    "uuid": "^10.0.0",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
@@ -31,6 +37,7 @@
     "@types/express-session": "^1.18.0",
     "@types/node": "^22.5.0",
     "jest": "^29.7.0",
+    "standard-version": "^9.5.0",
     "ts-jest": "^29.2.5"
   }
 }
