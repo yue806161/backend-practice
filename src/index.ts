@@ -22,39 +22,22 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
+app.use(express.query({}));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
-  express.query({
-    parseArrays: true,
-    depth: 10,
-    arrayLimit: 10,
-    parameterLimit: 10,
-    delimiter: ',',
-    comma: true,
-    allowDots: true,
-    plainObjects: true,
-    allowPrototypes: true,
-    allowSparse: true,
-    ignoreQueryPrefix: true,
-    charset: 'utf-8',
-    charsetSentinel: true,
-    interpretNumericEntities: true,
-    allowEmptyArrays: true,
-    duplicates: 'combine',
+  session({
+    secret: process.env.SESSION_SECRET || 'keyboard cat',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
   })
 );
-app.use(cookieParser(process.env.COOKIE_SECRET));
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       maxAge: 1000 * 60 * 60 * 24 * 7,
-//     },
-//   })
-// );
-// routes
-app.use('/api/v1/', require('./routers/api'));
+
+app.use('/api/v1/*', require('./routers/api'));
+
+app.use('/*', require('./routers/backendWeb'));
 
 app.listen(PORT, () => {
   console.log(`Server running on  http://localhost:${PORT}`);
