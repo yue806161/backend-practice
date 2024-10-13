@@ -6,31 +6,68 @@
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "build": "tsc",
-    "release": "standard-version",
+    "change-log": "standard-version",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "standard-version": {
     "types": [
-      { "type": "feat", "section": "Added", "hidden": false },
-      { "type": "fix", "section": "Fixed", "hidden": false },
-      { "type": "chore", "section": "Chores", "hidden": false },
-      { "type": "refactor", "section": "Changed", "hidden": false },
-      { "type": "docs", "section": "Documentation", "hidden": false },
-      { "type": "test", "section": "Tests", "hidden": false },
-      { "type": "perf", "section": "Performance Improvements", "hidden": false },
-      { "type": "style", "section": "Code Style", "hidden": false },
-      { "type": "build", "section": "Build System", "hidden": false },
-      { "type": "ci", "section": "Continuous Integration", "hidden": false }
+      {
+        "type": "feat",
+        "section": "Added",
+        "hidden": false
+      },
+      {
+        "type": "fix",
+        "section": "Fixed",
+        "hidden": false
+      },
+      {
+        "type": "chore",
+        "section": "Chores",
+        "hidden": false
+      },
+      {
+        "type": "refactor",
+        "section": "Changed",
+        "hidden": false
+      },
+      {
+        "type": "docs",
+        "section": "Documentation",
+        "hidden": false
+      },
+      {
+        "type": "test",
+        "section": "Tests",
+        "hidden": false
+      },
+      {
+        "type": "perf",
+        "section": "Performance Improvements",
+        "hidden": false
+      },
+      {
+        "type": "style",
+        "section": "Code Style",
+        "hidden": false
+      },
+      {
+        "type": "build",
+        "section": "Build System",
+        "hidden": false
+      },
+      {
+        "type": "ci",
+        "section": "Continuous Integration",
+        "hidden": false
+      }
     ],
-    "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n{{changelog}}",
+    "releaseCommitMessageFormat": "docs: 更新 Changelog",
     "infile": "docs/CHANGELOG.md",
     "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n",
-    "commitUrlFormat": "https://github.com/your-repo/commit/{{hash}}",
-    "compareUrlFormat": "https://github.com/your-repo/compare/{{previousTag}}...{{currentTag}}",
-    "issueUrlFormat": "https://github.com/your-repo/issues/{{id}}",
     "skip": {
       "bump": true,
-      "commit": true,
+      "commit": false,
       "tag": true
     }
   },
@@ -47,6 +84,7 @@
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "mongodb": "^6.8.0",
+    "multer": "^1.4.5-lts.1",
     "uuid": "^10.0.0",
     "ws": "^8.18.0",
     "zod": "^3.23.8"
