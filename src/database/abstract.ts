@@ -17,6 +17,7 @@ export abstract class AbstractDatabaseClient {
   abstract createIndex(collection: string, index: any, options?: any): Promise<any>;
 
   abstract batchOperate(collection: string, operations: BatchOperation<any>[], options?: any): Promise<any>;
+  abstract aggregate(collection: string, pipeline: any[], options?: any): Promise<any>;
 }
 
 export class Database<T> {
@@ -35,7 +36,7 @@ export class Database<T> {
       this.validate(data);
       return await this.client.create(this.collection, data, options);
     } catch (error) {
-      console.error('Validation error:', error);
+      console.error('Error creating data:', error);
       throw error;
     }
   }
@@ -54,7 +55,7 @@ export class Database<T> {
       this.validate(data, true);
       return await this.client.update(this.collection, query, data, options);
     } catch (error) {
-      console.error('Validation error:', error);
+      console.error('Error updating data:', error);
       throw error;
     }
   }
@@ -88,7 +89,16 @@ export class Database<T> {
       });
       return await this.client.batchOperate(this.collection, operations, options);
     } catch (error) {
-      console.error('Validation error:', error);
+      console.error('Error during batchOperate:', error);
+      throw error;
+    }
+  }
+
+  async aggregate(pipeline: any[], options?: any): Promise<any> {
+    try {
+      return await this.client.aggregate(this.collection, pipeline, options);
+    } catch (error) {
+      console.error('Error during aggregation:', error);
       throw error;
     }
   }
