@@ -1,5 +1,5 @@
 import { AbstractDatabaseClient } from './abstract';
-import { MongoDBClient } from './mongoDB';
+import { MongoDBClient } from './mongo.db';
 
 export enum DatabaseType {
   DynamoDB,

@@ -1,6 +1,6 @@
-import { AnyBulkWriteOperation, BulkWriteOptions, CreateIndexesOptions, Db, DeleteOptions, FindOptions, InsertOneOptions, MongoClient, UpdateOptions } from 'mongodb';
+import { AggregateOptions, AnyBulkWriteOperation, BulkWriteOptions, CreateIndexesOptions, Db, DeleteOptions, FindOptions, InsertOneOptions, MongoClient, UpdateOptions } from 'mongodb';
 import { AbstractDatabaseClient, BatchOperation } from './abstract';
-import { manyData } from '../utils/database';
+import { manyData } from '../utils/database.utils';
 
 const url = process.env.MONGO_URL || 'mongodb://localhost:27017';
 
@@ -60,7 +60,7 @@ export class MongoDBClient extends AbstractDatabaseClient {
     return db.collection(collection).createIndex(index, options);
   }
 
-  async batchOperate(collection: string, operations: BatchOperation<any>[], options?: any): Promise<any> {
+  async batchOperate(collection: string, operations: BatchOperation<any>[], options?: BulkWriteOptions & { upsert?: boolean }): Promise<any> {
     const db = await this.getDb();
     const coll = db.collection(collection);
     const bulkOps: AnyBulkWriteOperation<any>[] = [];
@@ -86,5 +86,10 @@ export class MongoDBClient extends AbstractDatabaseClient {
     }
 
     return coll.bulkWrite(bulkOps, options);
+  }
+
+  async aggregate(collection: string, pipeline: any[], options?: AggregateOptions): Promise<any[]> {
+    const db = await this.getDb();
+    return db.collection(collection).aggregate(pipeline, options).toArray();
   }
 }
