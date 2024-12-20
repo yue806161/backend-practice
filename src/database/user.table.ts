@@ -1,4 +1,4 @@
-import { Database } from './abstract';
+import { Database } from './abstract.db';
 import { DatabaseType } from './factory';
 import { IUser, UserSchema } from '../models/user.model';
 

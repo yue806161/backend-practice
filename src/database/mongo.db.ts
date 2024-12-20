@@ -1,5 +1,5 @@
 import { AggregateOptions, AnyBulkWriteOperation, BulkWriteOptions, CreateIndexesOptions, Db, DeleteOptions, FindOptions, InsertOneOptions, MongoClient, UpdateOptions } from 'mongodb';
-import { AbstractDatabaseClient, BatchOperation } from './abstract';
+import { AbstractDatabaseClient, BatchOperation } from './abstract.db';
 import { manyData } from '../utils/database.utils';
 
 const url = process.env.MONGO_URL || 'mongodb://localhost:27017';

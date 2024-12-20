@@ -1,4 +1,4 @@
-import { AbstractDatabaseClient } from './abstract';
+import { AbstractDatabaseClient } from './abstract.db';
 import { MongoDBClient } from './mongo.db';
 
 export enum DatabaseType {
