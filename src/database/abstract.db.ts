@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ZodObject, ZodRawShape } from 'zod';
 import { DatabaseFactory, DatabaseType } from './factory';
 
-export type BatchOperation<T> = {
+export interface BatchOperation<T> {
   type: 'create' | 'update' | 'delete';
   data?: T;
   query?: Partial<T>;
-};
+}
 
 export abstract class AbstractDatabaseClient {
   abstract close(): Promise<void>;
@@ -78,7 +79,7 @@ export class Database<T> {
     }
   }
 
-  async batchOperate(operations: Array<{ type: 'create' | 'update' | 'delete'; data?: any; query?: any }>, options?: any): Promise<any> {
+  async batchOperate(operations: { type: 'create' | 'update' | 'delete'; data?: any; query?: any }[], options?: any): Promise<any> {
     try {
       operations.forEach((operation) => {
         if (operation.type === 'create') {
@@ -103,16 +104,13 @@ export class Database<T> {
     }
   }
 
-  private validate(data: T | T[] | Partial<T>, isPartial: boolean = false): void {
-    try {
+  private validate(data: T | T[] | Partial<T>, isPartial = false): void {
       const schemaToUse = isPartial ? this.partialSchema : this.schema;
       if (Array.isArray(data)) {
         data.forEach((item) => schemaToUse.parse(item));
       } else {
         schemaToUse.parse(data);
       }
-    } catch (error) {
-      throw error;
-    }
+    
   }
 }

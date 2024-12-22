@@ -1,6 +1,7 @@
-import { AggregateOptions, AnyBulkWriteOperation, BulkWriteOptions, CreateIndexesOptions, Db, DeleteOptions, FindOptions, InsertOneOptions, MongoClient, UpdateOptions } from 'mongodb';
+import {AggregateOptions,AnyBulkWriteOperation,BulkWriteOptions,BulkWriteResult,CreateIndexesOptions,Db,DeleteOptions,DeleteResult,Document,Filter,FindOptions,IndexSpecification,InsertManyResult,InsertOneOptions,InsertOneResult,MongoClient,OptionalId,UpdateFilter,UpdateOptions,UpdateResult,WithId,} from 'mongodb';
 import { AbstractDatabaseClient, BatchOperation } from './abstract.db';
-import { manyData } from '../utils/database.utils';
+import { manyData } from '../utils/database';
+import { isFilter } from '../utils/mongo';
 
 const url = process.env.MONGO_URL || 'mongodb://localhost:27017';
 
@@ -27,30 +28,33 @@ export class MongoDBClient extends AbstractDatabaseClient {
     if (this.db) this.db = null;
   }
 
-  async create(collection: string, data: any, options?: BulkWriteOptions | InsertOneOptions): Promise<any> {
+  async create(collection: string, data: OptionalId<Document>[] | OptionalId<Document>, options?: BulkWriteOptions | InsertOneOptions): Promise<InsertOneResult<Document> | InsertManyResult<Document>> {
     const db = await this.getDb();
     const coll = db.collection(collection);
-    return manyData(data) ? coll.insertMany(data, options) : coll.insertOne(data, options);
+    return manyData<OptionalId<Document>>(data) ? coll.insertMany(data, options) : coll.insertOne(data, options);
   }
 
-  async read(collection: string, query: any, options?: FindOptions): Promise<any> {
+  async read(collection: string, query: Filter<Document>, options?: FindOptions): Promise<WithId<Document>[]> {
     const db = await this.getDb();
     return db.collection(collection).find(query, options).toArray();
   }
 
-  async update(collection: string, query: any, data: any, options?: UpdateOptions): Promise<any> {
+  async update(collection: string, query: Filter<Document>, data: UpdateFilter<Document>, options?: UpdateOptions, single = true): Promise<UpdateResult<Document>> {
     const db = await this.getDb();
     const coll = db.collection(collection);
-    const updateData = { $set: data };
-    return manyData(data) ? coll.updateMany(query, updateData, options) : coll.updateOne(query, updateData, options);
+    if (single) {
+      return coll.updateOne(query, data, options);
+    } else {
+      return coll.updateMany(query, data, options);
+    }
   }
 
-  async delete(collection: string, query: any, options?: DeleteOptions): Promise<any> {
+  async delete(collection: string, query: Filter<Document> | undefined, options?: DeleteOptions): Promise<DeleteResult> {
     const db = await this.getDb();
-    return db.collection(collection).deleteMany(query, options);
+    return await db.collection(collection).deleteMany(query, options);
   }
 
-  async createIndex(collection: string, index: any, options?: CreateIndexesOptions): Promise<string> {
+  async createIndex(collection: string, index: IndexSpecification, options?: CreateIndexesOptions): Promise<string> {
     const db = await this.getDb();
     const indexes = db.collection(collection).listIndexes();
     const existingIndex = indexes.map((i) => {
@@ -60,22 +64,31 @@ export class MongoDBClient extends AbstractDatabaseClient {
     return db.collection(collection).createIndex(index, options);
   }
 
-  async batchOperate(collection: string, operations: BatchOperation<any>[], options?: BulkWriteOptions & { upsert?: boolean }): Promise<any> {
+  async batchOperate<T extends Document>(collection: string, operations: BatchOperation<T>[], options?: BulkWriteOptions & { upsert?: boolean }): Promise<BulkWriteResult> {
     const db = await this.getDb();
-    const coll = db.collection(collection);
-    const bulkOps: AnyBulkWriteOperation<any>[] = [];
+    const coll = db.collection<T>(collection);
+    const bulkOps: AnyBulkWriteOperation<T>[] = [];
 
     for (const op of operations) {
       switch (op.type) {
-        case 'create':
-          if (op.data) bulkOps.push({ insertOne: { document: op.data } });
+        case 'create': {
+          if(!op.data) break;
+          const insertOp: AnyBulkWriteOperation<T> = { insertOne: { document: op.data as OptionalId<T> } };
+          if (op.data) bulkOps.push(insertOp);
           break;
-        case 'update':
-          if (op.query && op.data) bulkOps.push({ updateOne: { filter: op.query, update: { $set: op.data }, upsert: options?.upsert || false } });
+        }
+        case 'update': {
+          if (!isFilter(op.query)) break;
+          const updateOp: AnyBulkWriteOperation<T> = { updateOne: { filter: op.query , update: { $set: op.data }, upsert: options?.upsert || false } };
+          if (op.query && op.data) bulkOps.push(updateOp);
           break;
-        case 'delete':
-          if (op.query) bulkOps.push({ deleteOne: { filter: op.query } });
+        }
+        case 'delete': {
+          if (!isFilter(op.query)) break;
+          const deleteOp: AnyBulkWriteOperation<T> = { deleteOne: { filter: op.query } };
+          if (op.query) bulkOps.push(deleteOp);
           break;
+        }
         default:
           throw new Error(`Unsupported operation type: ${op.type}`);
       }
@@ -88,7 +101,7 @@ export class MongoDBClient extends AbstractDatabaseClient {
     return coll.bulkWrite(bulkOps, options);
   }
 
-  async aggregate(collection: string, pipeline: any[], options?: AggregateOptions): Promise<any[]> {
+  async aggregate(collection: string, pipeline: Document[], options?: AggregateOptions): Promise<Document[]> {
     const db = await this.getDb();
     return db.collection(collection).aggregate(pipeline, options).toArray();
   }

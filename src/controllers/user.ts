@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { DatabaseType } from '../database/factory';
-import { CreateUserRequest, GetUserListRequest, GetUserRequest } from '../models/user.model';
-import { response } from '../utils/controller.utils';
-import { UserService } from '../services/user.service';
+import { CreateUserRequest, GetUserListRequest, GetUserRequest } from '../models/user';
+import { response } from '../utils/controller';
+import { UserService } from '../services/user';
 
 const userService = UserService.getInstance(DatabaseType.MongoDB);
 
@@ -40,7 +40,7 @@ export async function getUser(req: Request, res: Response) {
     const reqParams = GetUserRequest.parse(req.query);
     const { id } = reqParams;
 
-    const user = await userService.getUsers({id});
+    const user = await userService.getUsers({ id });
 
     return response(res, 200, 'User retrieved successfully.', user);
   } catch (error) {

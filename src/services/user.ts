@@ -1,7 +1,7 @@
 import { UserTable } from '../database/user.table';
 import { DatabaseType } from '../database/factory';
 import { randomUUID } from 'crypto';
-import { IUser } from '../models/user.model';
+import { IUser } from '../models/user';
 
 export class UserService {
   private static instance: UserService;
@@ -18,7 +18,7 @@ export class UserService {
     return UserService.instance;
   }
 
-  async getUsers(query: Partial<IUser>, options: any = {}) {
+  async getUsers(query: Partial<IUser>, options: unknown = {}) {
     return this.userTable.read(query, options);
   }
 
@@ -48,5 +48,4 @@ export class UserService {
   async banUser(id: string) {
     return this.userTable.update({ id }, { status: 'banned' });
   }
-
 }
