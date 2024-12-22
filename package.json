@@ -2,6 +2,7 @@
   "name": "operate-database",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index",
   "scripts": {
     "start": "ts-node ./src/index.ts",
