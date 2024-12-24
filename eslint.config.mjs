@@ -1,12 +1,12 @@
 // @ts-check
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import tslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
 
-export default tseslint.config(
+export default tslint.config(
     eslint.configs.recommended,
-    ...tseslint.configs.recommended,
-    ...tseslint.configs.stylistic,
+    ...tslint.configs.strict,
+    ...tslint.configs.stylistic,
     prettierConfig,
     // {
     //     rules:{

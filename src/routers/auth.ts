@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import v1Router from './v1/index';
 
 const router = Router();
 
 router.get('/', (req, res) => {
-  return res.send('Hello from backend practice!');
+  res.send('Hello from auth!');
 });
 
-router.use('/v1', v1Router);
+router.post('/callback');
 
 export default router;

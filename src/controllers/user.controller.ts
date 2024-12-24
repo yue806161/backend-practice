@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { DatabaseType } from '../database/factory';
-import { CreateUserRequest, GetUserListRequest, GetUserRequest } from '../models/user';
+import { CreateUserRequest, GetUserListRequest, GetUserRequest } from '../models/user.model';
 import { response } from '../utils/controller';
-import { UserService } from '../services/user';
+import { UserService } from '../services/user.service';
 
 const userService = UserService.getInstance(DatabaseType.MongoDB);
 
@@ -27,7 +27,6 @@ export async function createUser(req: Request, res: Response) {
     const reqParams = CreateUserRequest.parse(req.body);
     const { name, email, password, role, status } = reqParams;
 
-    //userTable.create({ id: randomUUID(), name, email, password, role, status, timestamps: { created_at: Date.now(), updated_at: Date.now() } });
     await userService.createUser({ name, email, password, role, status });
 
     return response(res, 201, 'User created successfully.', undefined, 200);
@@ -37,7 +36,7 @@ export async function createUser(req: Request, res: Response) {
 }
 export async function getUser(req: Request, res: Response) {
   try {
-    const reqParams = GetUserRequest.parse(req.query);
+    const reqParams = GetUserRequest.parse(req.body);
     const { id } = reqParams;
 
     const user = await userService.getUsers({ id });
@@ -47,5 +46,5 @@ export async function getUser(req: Request, res: Response) {
     return response(res, 500, error);
   }
 }
-export function updateUser(req: Request, res: Response) {}
-export function deleteUser(req: Request, res: Response) {}
+// export function updateUser(req: Request, res: Response) {}
+// export function deleteUser(req: Request, res: Response) {}

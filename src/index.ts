@@ -2,15 +2,20 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import api from './routers/index';
 import web from './routers/backend.web';
+import auth from './routers/auth';
 
 const app = express();
-dotenv.config();
+
+const envFile = `.env.${process.env.NODE_ENV || 'dev'}.local`;
+dotenv.config({ path: envFile });
 
 const PORT = process.env.PORT || 3000;
 
 // middleware
+app.use(morgan('dev', {}));
 app.use(express.json({ type: 'application/json' }));
 app.use(express.urlencoded({ extended: true, type: 'application/x-www-form-urlencoded' }));
 app.use(express.query({}));
@@ -26,7 +31,8 @@ app.use(
   })
 );
 
-app.use('/api/*', api);
+app.use('/auth', auth);
+app.use('/api', api);
 
 app.use('/console', web);
 

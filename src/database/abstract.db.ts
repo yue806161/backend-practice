@@ -27,7 +27,7 @@ export class Database<T> {
   private partialSchema: ZodObject<ZodRawShape>;
 
   constructor(private databaseType: DatabaseType, private collection: string, schema: ZodObject<ZodRawShape>) {
-    this.client = DatabaseFactory.getDatabaseClient(databaseType);
+    this.client = DatabaseFactory.getDatabaseClient(this.databaseType);
     this.schema = schema;
     this.partialSchema = schema.partial();
   }
@@ -105,12 +105,11 @@ export class Database<T> {
   }
 
   private validate(data: T | T[] | Partial<T>, isPartial = false): void {
-      const schemaToUse = isPartial ? this.partialSchema : this.schema;
-      if (Array.isArray(data)) {
-        data.forEach((item) => schemaToUse.parse(item));
-      } else {
-        schemaToUse.parse(data);
-      }
-    
+    const schemaToUse = isPartial ? this.partialSchema : this.schema;
+    if (Array.isArray(data)) {
+      data.forEach((item) => schemaToUse.parse(item));
+    } else {
+      schemaToUse.parse(data);
+    }
   }
 }

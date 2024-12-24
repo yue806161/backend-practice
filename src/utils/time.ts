@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 // This file contains a function to get the current date and time in the specified locale and options.
 const default_options = {
   weekday: 'long',
@@ -15,3 +17,13 @@ export function getDateTime(locale: Intl.LocalesArgument, options: object = defa
 
   return date.toLocaleDateString(locale, options);
 }
+
+export interface IDateTime {
+  date: Date;
+  time: number;
+}
+
+export const DateTimeSchema = z.object({
+  date: z.date(),
+  time: z.number().int(),
+});

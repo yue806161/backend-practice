@@ -1,7 +1,8 @@
 import { UserTable } from '../database/user.table';
 import { DatabaseType } from '../database/factory';
 import { randomUUID } from 'crypto';
-import { IUser } from '../models/user';
+import { IUser } from '../models/user.model';
+import { hash } from '../utils/service.utils';
 
 export class UserService {
   private static instance: UserService;
@@ -23,19 +24,22 @@ export class UserService {
   }
 
   async createUser(data: { name: string; email: string; password: string; role: string; status: string }) {
+    const now = { date: new Date(), time: Date.now() };
     const newUser = {
       id: randomUUID(),
       ...data,
-      timestamps: { created_at: Date.now(), updated_at: Date.now() },
+      password_hash: await hash(data.password),
+      timestamps: { created_at: now, updated_at: now },
     };
 
     return this.userTable.create(newUser);
   }
 
   async updateUser(id: string, data: Partial<IUser>) {
+    const now = { date: new Date(), time: Date.now() };
     const updatedUser = {
       ...data,
-      timestamps: { updated_at: Date.now() },
+      timestamps: { updated_at: now },
     };
 
     return this.userTable.update({ id }, updatedUser);
