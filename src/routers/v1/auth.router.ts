@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { changePassword, getLogin, getLoginSuspicious, getOauthProviders, oauthCallback, oauthSignIn, refreshToken, resendVerificationEmail, revokeToken, signIn, signOut, signOutAll, verifyEmail } from '../../controllers/auth.controller';
+import { changePassword, getLogin, getLoginSuspicious, refreshToken, resendVerificationEmail, revokeToken, signIn, signOut, signOutAll, verifyEmail } from '../../controllers/auth.controller';
 
 const router = Router();
 
@@ -15,10 +15,6 @@ router.post('/change-password', changePassword);
 
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verification-email', resendVerificationEmail);
-
-router.get('/oauth/prviders', getOauthProviders);
-router.post('/oauth/sign-in', oauthSignIn);
-router.post('/oauth/callback', oauthCallback);
 
 router.get('login/:id', getLogin);
 router.get('login/suspicious/:id', getLoginSuspicious);

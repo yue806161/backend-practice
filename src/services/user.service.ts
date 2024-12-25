@@ -3,27 +3,32 @@ import { DatabaseType } from '../database/factory';
 import { randomUUID } from 'crypto';
 import { IUser } from '../models/user.model';
 import { hash } from '../utils/service.utils';
+import { ClientError } from '../models/error.model';
+import { ErrorCode } from '../config';
 
 export class UserService {
-  private static instance: UserService;
-  public userTable: UserTable;
+  private static _instance: UserService;
+  private userTable: UserTable;
 
   private constructor(databaseType: DatabaseType) {
     this.userTable = new UserTable(databaseType);
   }
 
-  public static getInstance(databaseType: DatabaseType): UserService {
-    if (!UserService.instance) {
-      UserService.instance = new UserService(databaseType);
+  static getInstance(databaseType: DatabaseType): UserService {
+    if (!this._instance) {
+      this._instance = new UserService(databaseType);
     }
-    return UserService.instance;
+    return this._instance;
   }
 
   async getUsers(query: Partial<IUser>, options: unknown = {}) {
     return this.userTable.read(query, options);
   }
 
-  async createUser(data: { name: string; email: string; password: string; role: string; status: string }) {
+  async createUser(data: { name: string; email: string; password: string; status: 'active' | 'revoke' }) {
+    const existingUser = await this.userTable.read({ email: data.email });
+    if (existingUser) throw new ClientError('User already exists', ErrorCode.RESOURCE_ALREADY_EXISTS);
+
     const now = { date: new Date(), time: Date.now() };
     const newUser = {
       id: randomUUID(),
@@ -49,7 +54,7 @@ export class UserService {
     return this.userTable.delete({ id });
   }
 
-  async banUser(id: string) {
-    return this.userTable.update({ id }, { status: 'banned' });
-  }
+  // async banUser(id: string) {
+  //   return this.userTable.update({ id }, { status: 'banned' });
+  // }
 }

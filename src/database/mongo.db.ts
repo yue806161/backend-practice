@@ -1,9 +1,8 @@
-import {AggregateOptions,AnyBulkWriteOperation,BulkWriteOptions,BulkWriteResult,CreateIndexesOptions,Db,DeleteOptions,DeleteResult,Document,Filter,FindOptions,IndexSpecification,InsertManyResult,InsertOneOptions,InsertOneResult,MongoClient,OptionalId,UpdateFilter,UpdateOptions,UpdateResult,WithId,} from 'mongodb';
+import { AggregateOptions, AnyBulkWriteOperation, BulkWriteOptions, BulkWriteResult, CreateIndexesOptions, Db, DeleteOptions, DeleteResult, Document, Filter, FindOptions, IndexSpecification, InsertManyResult, InsertOneOptions, InsertOneResult, MongoClient, OptionalId, UpdateFilter, UpdateOptions, UpdateResult, WithId } from 'mongodb';
 import { AbstractDatabaseClient, BatchOperation } from './abstract.db';
-import { manyData } from '../utils/database';
-import { isFilter } from '../utils/mongo';
-
-const url = process.env.MONGO_URL || 'mongodb://localhost:27017';
+import { manyData } from '../utils/database.utils';
+import { isFilter } from '../utils/mongo.utils';
+import { CONFIG } from '../config';
 
 export class MongoDBClient extends AbstractDatabaseClient {
   private client: MongoClient;
@@ -11,14 +10,14 @@ export class MongoDBClient extends AbstractDatabaseClient {
 
   constructor() {
     super();
-    this.client = new MongoClient(url);
+    this.client = new MongoClient(CONFIG.mongo_url);
   }
 
   private async getDb(): Promise<Db> {
     if (!this.db) {
       await this.client.connect();
       this.db = this.client.db();
-      console.log(`Connected to MongoDB at ${url}`);
+      console.log(`Connected to MongoDB at ${CONFIG.mongo_url}`);
     }
     return this.db;
   }
@@ -72,14 +71,14 @@ export class MongoDBClient extends AbstractDatabaseClient {
     for (const op of operations) {
       switch (op.type) {
         case 'create': {
-          if(!op.data) break;
+          if (!op.data) break;
           const insertOp: AnyBulkWriteOperation<T> = { insertOne: { document: op.data as OptionalId<T> } };
           if (op.data) bulkOps.push(insertOp);
           break;
         }
         case 'update': {
           if (!isFilter(op.query)) break;
-          const updateOp: AnyBulkWriteOperation<T> = { updateOne: { filter: op.query , update: { $set: op.data }, upsert: options?.upsert || false } };
+          const updateOp: AnyBulkWriteOperation<T> = { updateOne: { filter: op.query, update: { $set: op.data }, upsert: options?.upsert || false } };
           if (op.query && op.data) bulkOps.push(updateOp);
           break;
         }

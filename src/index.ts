@@ -15,7 +15,7 @@ dotenv.config({ path: envFile });
 const PORT = process.env.PORT || 3000;
 
 // middleware
-app.use(morgan('dev', {}));
+app.use(morgan('dev'));
 app.use(express.json({ type: 'application/json' }));
 app.use(express.urlencoded({ extended: true, type: 'application/x-www-form-urlencoded' }));
 app.use(express.query({}));

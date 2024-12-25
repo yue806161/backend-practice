@@ -6,8 +6,7 @@ export interface IUser {
   name: string;
   email: string;
   password_hash: string;
-  role: string;
-  status: string;
+  status: 'active' | 'revoke';
   timestamps: {
     created_at?: IDateTime;
     updated_at: IDateTime;
@@ -19,7 +18,6 @@ export const UserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password_hash: z.string(),
-  role: z.string(),
   status: z.string(),
   timestamps: z.object({
     created_at: DateTimeSchema,
@@ -27,20 +25,17 @@ export const UserSchema = z.object({
   }),
 });
 
-export const GetUserListRequest = z.object({
-  status: z.string(),
-  page: z.number(),
-  limit: z.number(),
-  sort: z.string(),
-});
-export const GetUserRequest = z.object({
-  id: z.string(),
+export const GetUsersRequestParams = z.object({ id: z.string() });
+export const GetUsersRequestQuery = z.object({
+  status: z.enum(['active', 'revoke']).default('active'),
+  page: z.number().default(1),
+  limit: z.number().default(10),
+  sort: z.string().default('asc'),
 });
 
 export const CreateUserRequest = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string().min(8, 'password must be at least 8 characters'),
-  role: z.string(),
-  status: z.string(),
+  status: z.enum(['active', 'revoke']).default('active'),
 });

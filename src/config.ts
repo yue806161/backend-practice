@@ -5,12 +5,11 @@ dotenv.config({ path: envFile });
 
 // 讀取常數
 export const CONFIG = {
-  mongo: process.env.MONGO_URL,
+  mongo_url: process.env.MONGO_URL || 'mongodb://localhost:27017',
   debug: process.env.DEBUG === 'true',
 };
 
 export enum StatusCode {
-  // 標準 HTTP 狀態碼
   OK = 200,
   CREATED = 201,
   REDIRECT = 302,
@@ -18,13 +17,21 @@ export enum StatusCode {
   UNAUTHORIZED = 401,
   NOT_FOUND = 404,
   INTERNAL_SERVER_ERROR = 500,
-
-  // 自訂義狀態碼
+}
+export enum ErrorCode {
+  // 客戶端錯誤代碼
   RESOURCE_ALREADY_EXISTS = 1001,
   INVALID_INPUT = 1002,
-  UNAUTHORIZED_ACCESS = 1003,
-  FORBIDDEN = 1004,
-  RESOURCE_NOT_FOUND = 1005,
+
+  // 驗證錯誤代碼
+  UNAUTHORIZED_ACCESS = 1503,
+  FORBIDDEN = 1504,
+
+  // 私服器內部錯誤代碼
+  RESOURCE_NOT_FOUND = 2005,
+  INTERNAL_SERVER_ERROR = 2006,
+  DATABASE_ERROR = 2007,
+  UNKNOWN_ERROR = 2008,
 }
 
 export const CONST = {
