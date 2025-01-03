@@ -1,38 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ZodObject, ZodRawShape } from 'zod';
-import { DatabaseFactory, DatabaseType } from './factory';
-
-export interface BatchOperation<T> {
-  type: 'create' | 'update' | 'delete';
-  data?: T;
-  query?: Partial<T>;
-}
-
-export abstract class AbstractDatabaseClient {
-  abstract close(): Promise<void>;
-
-  abstract create(collection: string, data: any, options?: any): Promise<any>;
-  abstract read(collection: string, query: any, options?: any): Promise<any>;
-  abstract update(collection: string, query: any, data: any, options?: any): Promise<any>;
-  abstract delete(collection: string, query: any, options?: any): Promise<any>;
-  abstract createIndex(collection: string, index: any, options?: any): Promise<any>;
-
-  abstract batchOperate(collection: string, operations: BatchOperation<any>[], options?: any): Promise<any>;
-  abstract aggregate(collection: string, pipeline: any[], options?: any): Promise<any>;
-}
+import { AbstractDatabaseClient, DatabaseFactory } from '../utils/database';
+import { DatabaseType } from '../config';
 
 export class Database<T> {
   private client: AbstractDatabaseClient;
   private schema: ZodObject<ZodRawShape>;
   private partialSchema: ZodObject<ZodRawShape>;
 
-  constructor(private databaseType: DatabaseType, private collection: string, schema: ZodObject<ZodRawShape>) {
+  constructor(
+    private databaseType: DatabaseType,
+    private collection: string,
+    schema: ZodObject<ZodRawShape>
+  ) {
     this.client = DatabaseFactory.getDatabaseClient(this.databaseType);
     this.schema = schema;
     this.partialSchema = schema.partial();
   }
 
-  async create(data: T | T[], options?: any): Promise<any> {
+  async create(data: T | T[], options?: unknown): Promise<any> {
     try {
       this.validate(data);
       return await this.client.create(this.collection, data, options);

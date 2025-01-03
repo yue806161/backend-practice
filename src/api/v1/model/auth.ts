@@ -1,7 +1,11 @@
 import { z } from 'zod';
-import { CONST } from '../config';
-import { DateTimeSchema, IDateTime } from '../utils/time';
+import { CONST } from '../../../config';
+import { DateTimeSchema, IDateTime } from '../../../models/time';
+import { Request } from 'express';
 
+export interface AuthenticatedRequest extends Request {
+  user?: string | object;
+}
 export interface IAuth {
   user_id: string;
   email: string;

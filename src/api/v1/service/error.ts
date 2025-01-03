@@ -1,6 +1,6 @@
 import { ZodError } from 'zod';
-import { AuthError, ClientError, DatabaseError } from '../models/error.model';
-import { StatusCode } from '../config';
+import { AuthError, ClientError, DatabaseError } from '../../../models/error';
+import { StatusCode } from '../../../config';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ErrorService {

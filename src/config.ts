@@ -1,12 +1,18 @@
 import * as dotenv from 'dotenv';
 
-const envFile = process.env.NODE_ENV === 'prod' ? '../.env.prod' : '../.env.dev';
-dotenv.config({ path: envFile });
+dotenv.config({ path: process.env.NODE_ENV === 'prod' ? '.env.prod' : '.env.dev' });
 
-// 讀取常數
+// 設置
 export const CONFIG = {
   mongo_url: process.env.MONGO_URL || 'mongodb://localhost:27017',
-  debug: process.env.DEBUG === 'true',
+  debug: process.env.DEBUG || false,
+  // debug: false,
+  port: Number(process.env.PORT) || 3000,
+  cookie_secret: process.env.COOKIE_SECRET || 'secret',
+  jwt_secret: process.env.JWT_SECRET || 'secret',
+  jwt_expires_in: process.env.JWT_EXPIRES_IN || '1d',
+  jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN || '1m',
+  jwt_refresh_secret: process.env.JWT_REFRESH_SECRET || 'secret',
 };
 
 export enum StatusCode {
@@ -37,3 +43,9 @@ export enum ErrorCode {
 export const CONST = {
   ip_regex: /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$/,
 };
+
+export enum DatabaseType {
+  DynamoDB,
+  MongoDB,
+  MySQL,
+}

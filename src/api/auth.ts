@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getOauthProviders, oauthCallback, oauthSignIn } from '../controllers/auth.controller';
+import { getOauthProviders, oauthCallback, oauthSignIn } from './v1/controller/auth';
 
 const router = Router();
 

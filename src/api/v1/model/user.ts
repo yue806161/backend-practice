@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DateTimeSchema, IDateTime } from '../utils/time';
+import { DateTimeSchema, IDateTime } from '../../../models/time';
 
 export interface IUser {
   id: string;
@@ -28,8 +28,14 @@ export const UserSchema = z.object({
 export const GetUsersRequestParams = z.object({ id: z.string() });
 export const GetUsersRequestQuery = z.object({
   status: z.enum(['active', 'revoke']).default('active'),
-  page: z.number().default(1),
-  limit: z.number().default(10),
+  page: z
+    .string()
+    .default('1')
+    .transform((s) => parseInt(s, 10)),
+  limit: z
+    .string()
+    .default('10')
+    .transform((s) => parseInt(s, 10)),
   sort: z.string().default('asc'),
 });
 

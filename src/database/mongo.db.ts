@@ -1,7 +1,6 @@
 import { AggregateOptions, AnyBulkWriteOperation, BulkWriteOptions, BulkWriteResult, CreateIndexesOptions, Db, DeleteOptions, DeleteResult, Document, Filter, FindOptions, IndexSpecification, InsertManyResult, InsertOneOptions, InsertOneResult, MongoClient, OptionalId, UpdateFilter, UpdateOptions, UpdateResult, WithId } from 'mongodb';
-import { AbstractDatabaseClient, BatchOperation } from './abstract.db';
-import { manyData } from '../utils/database.utils';
-import { isFilter } from '../utils/mongo.utils';
+import { manyData, AbstractDatabaseClient, BatchOperation } from '../utils/database';
+import { isFilter } from '../utils/mongo';
 import { CONFIG } from '../config';
 
 export class MongoDBClient extends AbstractDatabaseClient {

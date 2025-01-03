@@ -1,10 +1,9 @@
-import { UserTable } from '../database/user.table';
-import { DatabaseType } from '../database/factory';
+import { UserTable } from '../database/user';
 import { randomUUID } from 'crypto';
-import { IUser } from '../models/user.model';
-import { hash } from '../utils/service.utils';
-import { ClientError } from '../models/error.model';
-import { ErrorCode } from '../config';
+import { IUser } from '../model/user';
+import { hash } from '../../../utils/service';
+import { ClientError } from '../../../models/error';
+import { DatabaseType, ErrorCode } from '../../../config';
 
 export class UserService {
   private static _instance: UserService;
@@ -27,13 +26,14 @@ export class UserService {
 
   async createUser(data: { name: string; email: string; password: string; status: 'active' | 'revoke' }) {
     const existingUser = await this.userTable.read({ email: data.email });
-    if (existingUser) throw new ClientError('User already exists', ErrorCode.RESOURCE_ALREADY_EXISTS);
+    if (existingUser.length !== 0) throw new ClientError('User already exists', ErrorCode.RESOURCE_ALREADY_EXISTS);
 
     const now = { date: new Date(), time: Date.now() };
+    const { password, ...rest } = data;
     const newUser = {
       id: randomUUID(),
-      ...data,
-      password_hash: await hash(data.password),
+      ...rest,
+      password_hash: await hash(password),
       timestamps: { created_at: now, updated_at: now },
     };
 
